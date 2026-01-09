@@ -1,0 +1,137 @@
+\documentclass{article}
+
+\usepackage[serbian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\newtheorem{lemma}{Lema}
+\newtheorem{theorem}{Teorema}
+
+
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\title{Pokrivanje skupa crvenih i plavih tačaka jediničnim kvadratima}
+\author{Staša Đorđević 1007/2025\\
+\small Matematički fakultet Univerziteta u Beogradu}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Uvod}
+%Najpre kratak, neformalan opis problema i zašto je bitan
+Problem \textit{Red--Blue Unit-Square Cover} je geometrijska verzija klasičnog problema \textit{Red--Blue Set Cover}: u osnovnom problemu dati su crveni skup $R$, plavi skup $B$ i familija podskupova skupa $R \cup B$, a cilj je pronaći potfamiliju koja pokriva sve plave, a što manje crvenih elemenata.  
+
+U geometrijskoj verziji elementi su tačke u ravni, a podskupovi su jedinični kvadrati. Cilj je pokriti sve plave tačke uz minimalan broj pokrivenih crvenih. Problem je značajan jer modeluje situacije sa suprotstavljenim ciljevima i ostaje NP-težak, što ga čini pogodnim za proučavanje aproksimacionih algoritama.
+
+U radu \cite{rad} se pokazuje da i ova geometrijska verzija problema ostaje NP-teška, ali da postoji polinomijalna aproksimaciona šema (PTAS) za njegovo rešavanje. PTAS (\emph{Polynomial-Time Approximation Scheme}) je familija algoritama koji, za svaku konstantu $\epsilon > 0$, pronalaze rešenje čija je vrednost najviše $(1+\epsilon)$ puta veća od optimalne, pri čemu je vreme izvršavanja polinomijalno u veličini ulaza za fiksno $\epsilon$.
+%Ko su (i odakle su) autori rada
+%Gde i kada je objavljen rad
+\section{O autorima i radu}
+Rad pod nazivom \emph{Geometric red-blue set cover for unit squares and related problems} objavljen je 2014. godine u časopisu \emph{Computational Geometry: Theory and Applications}, a autori su Timothy M. Chan i Nan Hu \cite{rad}. U vreme objavljivanja rada, autori su bili istraživači na Cheriton School of Computer Science, University of Waterloo, Kanada.
+
+%Opis glavnih rezultata (teoreme/dokazi, algoritmi, implementacije, ..) Nije potrebno prezentovati dokaze ako oni nisu suština samog rada.
+
+\section{Glavni rezultati}
+Glavni fokus ovog rada nije na konkretnom rešavanju problema, već na tehnikama koje omogućavaju efikasno približno rešenje.  
+Autori najpre pokazuju da je problem NP-težak, a zatim se fokusiraju na strukturna svojstva optimalnog rešenja i primenu mod-jedan transformacije, što čini osnovu za polinomijalnu aproksimacionu šemu (PTAS).
+
+\subsection {NP-težina problema}
+Dokazuje se da je problem NP-težak redukcijom iz problema \textit{vertex cover} na planarnim grafovima maksimalnog stepena 3, za koji je poznato da je NP-težak.  
+
+\textbf{Vertex cover problem.}  
+Dat je graf $G=(V,E)$. Cilj je pronaći najmanji skup čvorova $C \subseteq V$ tako da svaka grana iz $E$ ima bar jedan kraj u $C$.  
+
+Da bismo redukcijom pokazali NP-težinu, svaku granu u $G$ zamenjujemo plavom tačkom u njenom srednjem delu, dok se čvorovi $G$ predstavljaju crvenim tačkama. Za svaku granu dodajemo dva jedinična kvadrata: jedan pokriva crvenu tačku na jednom kraju i plavu tačku, a drugi pokriva plavu i crvenu tačku na drugom kraju (videti Sliku~\ref{fig:reduction}).  
+
+\textbf{Ispravnost redukcije.}  
+Ako u grafu $G$ postoji vertex cover veličine $k$, tada izbor odgovarajućih $k$ kvadrata pokriva sve plave tačke. Obrnuto, svaki skup kvadrata koji pokriva sve plave tačke odgovara vertex cover-u u $G$.
+
+Time je pokazano da je problem NP-težak.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{"slike/reduction_from_vertex_cover.png"}
+    \caption{Konstrukcija instance problema \textit{Red--Blue Unit-Square Cover} iz problema \textit{vertex cover}.}
+    \label{fig:reduction}
+\end{figure}
+%=====================================
+\subsection{PTAS}
+
+Osnovna ideja PTAS-a zasniva se na strukturnom svojstvu optimalnog rešenja i tehnici pomeranja mreže.
+
+Autori najpre pokazuju da, ako se sve plave tačke nalaze unutar kvadrata dimenzije $k \times k$, tada se optimalno rešenje može razložiti na $O(k^2)$ \emph{monotonih}\footnote{Skup jediničnih kvadrata sa zajedničkom tačkom naziva se \emph{monotonim} ako su centri monotono uređeni po $x$ i $y$ koordinati; granica njihove unije čini dva komplementarna monotona lanca.} skupova jediničnih kvadrata. Ova strukturna osobina optimalnog rešenja predstavlja osnovu za dobijanje tačnog algoritma u ovom ograničenom slučaju.
+
+Ključni tehnički alat je \emph{mod-jedan transformacija}, koja preslikava svaku tačku $(x,y)$ u $(x \bmod 1, y \bmod 1)$. Na ovaj način svi jedinični kvadrati se sabijaju u jednu ćeliju, dok se granice monotonih skupova preslikavaju u dva komplementarna monotona lanca koji se dodiruju u uglovima ćelije (Slike~\ref{fig:mod11} i~\ref{fig:mod12}). Ovo značajno pojednostavljuje kodiranje parcijalnih rešenja.
+
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{slike/mod_one_unit_sq.png}
+        \caption{Jedinični kvadrat}
+        \label{fig:mod11}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{slike/mod_one_monotone.png}
+        \caption{Monotoni skup}
+        \label{fig:mod12}
+    \end{subfigure}
+    \caption{Primena mod-jedan transformacije}
+\end{figure}
+
+
+Na osnovu ove konstrukcije, autori dobijaju tačan algoritam za slučaj kada su sve plave tačke ograničene na oblast dimenzije $k \times k$. Algoritam koristi dinamičko programiranje, pri čemu se stanja definišu izborom kvadrata u monotonim skupovima, a ukupna složenost je polinomijalna u veličini ulaza za fiksno $k$.
+
+
+Da bi se dobio PTAS za opšti slučaj, koristi se tehnika pomeranja mreže (\emph{grid shifting}). Ravan se deli na $k \times k$ ćelije, a mreža se pomera za sve moguće pomake $a,b \in \{0,\dots,k-1\}$. Za svaki pomak rešava se problem nezavisno u svakoj ćeliji korišćenjem prethodnog algoritma, a lokalna rešenja se kombinuju u globalno rešenje.
+
+Tehnikom pomeranja mreže može se pokazati da postoji pomak za koji kvadrati koji seku granice ćelija doprinose samo $O(1/k)$-faktorom u odnosu na optimalno rešenje. Izborom $k = O(1/\epsilon)$ dobija se $(1+\epsilon)$-aproksimacija, čime se dobija PTAS.
+
+%Opis primena
+\section{Srodni problemi i primene}
+Tehnike uvedene u ovom radu mogu se primeniti i na druge probleme geometrijskog pokrivanja. Na primer, dobijaju se PTAS algoritmi za varijante sa težinama, parcijalnim pokrivanjem ili jedinstvenim pokrivanjem tačaka. Rad se time uklapa u širi niz rezultata o aproksimacionim algoritmima za probleme pokrivanja jediničnim geometrijskim oblicima.
+
+\section{Zaključak}
+
+Rad se nadovezuje na prethodne rezultate \cite{erle1,ito}, koji su dali PTAS algoritme za srodne probleme.
+
+Glavni doprinos ovog rada je uvođenje \emph{mod-jedan} transformacije, koja omogućava znatno jednostavniju formulaciju dinamičkog programiranja u poređenju sa ranijim pristupima. Iako predloženi PTAS ima nešto lošije asimptotsko vreme izvršavanja, njegova konceptualna jednostavnost čini ga lakšim za razumevanje i implementaciju.
+
+Autori takođe ukazuju da je ova tehnika specifična za jedinične kvadrate i da ostaje otvoreno pitanje da li se sličan pristup može primeniti na probleme sa jediničnim diskovima ili u višim dimenzijama.
+%Kako se opisani rezultati odnose na druge relevantne rezultate (nijedan rad nije nezavisan od svega ostalog; dakle - da li donosi uopštenje tvrdjenja, unapredjeni algoritam, nove primene, itd)
+\begin{thebibliography}{9}
+
+\bibitem{rad}
+Timothy M. Chan, Nan Hu. \emph{Geometric red–blue set cover for unit squares and related
+problems} Journal of Computational Geometry (2014): 380-385.
+
+\bibitem{redblueset} R.D. Carr, S. Doddi, G. Konjevod, M. Marathe \emph{On the red–blue set cover problem} Proc. ACM–SIAM Symposium on Discrete Algorithms (SODA) (2000), pp. 345-353
+
+\bibitem{hochmaass} D.S. Hochbaum, W. Maass, Approximation schemes for covering and packing problems in image processing and VLSI, J. ACM 32 (1985) 130–136.
+
+\bibitem{erle1} T. Erlebach, E.J. van Leeuwen, PTAS for weighted set cover on unit squares, in: Proc. International Workshop on Approximation Algorithms for Combinatorial Optimization (APPROX), 2010, pp. 166–177.
+
+\bibitem{ito} T. Ito, S.-I. Nakano, Y. Okamoto, Y. Otachi, R. Uehara, T. Uno, Y. Uno, A polynomial-time approximation scheme for the geometric unique coverage problem on unit squares, in: Proc. Scandinavian Symposium and Workshops on Algorithm Theory (SWAT), 2012, pp. 24–35.
+
+\end{thebibliography}
+
+\end{document}
